@@ -1,0 +1,7 @@
+{
+    "require": {
+        "joshcam/mysqli-database-class": "dev-master",
+        "slim/slim": "^3.0",
+        "lindelius/php-jwt": "^0.6"
+    }
+}

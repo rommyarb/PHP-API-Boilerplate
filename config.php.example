@@ -1,0 +1,18 @@
+<?php
+require_once 'vendor/joshcam/mysqli-database-class/MysqliDb.php';
+
+// CONFIGURATION
+$secret_key = "SET_YOUR_SUPER_SECRET_KEY_HERE";
+$db = new MysqliDb(array(
+  'host' => 'YOUR_HOST', // example: 'localhost'
+  'username' => 'YOUR_HOST_USERNAME',
+  'password' => 'YOUR_HOST_PASSWORD',
+  'db' => 'YOUR_DATABASE_NAME',
+  'charset' => 'SET_DB_CHARSET', // example: 'utf8'
+));
+
+function throw404()
+{
+  header("HTTP/1.0 404 Not Found");
+  exit('<h1>404: Not Found</h1>');
+}
