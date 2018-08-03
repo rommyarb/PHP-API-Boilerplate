@@ -6,11 +6,10 @@
 Install composer if you haven't: https://getcomposer.org/download
 1. In main directory, run this php command to install all dependencies:
 `php composer.phar install`
-2. Rename *config.php.example* to *config.php* and set your own configurations.
+2. Rename **config.php.example** to **config.php** and set your own configurations.
 
-<br/>
 
 ### This repository is using:
-- **Slim Framework** https://www.slimframework.com
-- **PHP JWT** https://github.com/lindelius/php-jwt
-- **PHP MySQLi Database Class** https://github.com/ThingEngineer/PHP-MySQLi-Database-Class
+- [Slim Framework](https://www.slimframework.com)
+- [PHP JWT](https://github.com/lindelius/php-jwt)
+- [PHP MySQLi Database Class](https://github.com/ThingEngineer/PHP-MySQLi-Database-Class)
