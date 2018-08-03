@@ -73,6 +73,14 @@ $app->get('/search/{table_name}/{column_name}/{value}', function (Request $req, 
   return $res->withJson($results);
 });
 
+// (READ) WHERE
+$app->get('/get/{table_name}/{column_name}/{value}', function (Request $req, Response $res, array $args) {
+  global $db;
+  $db->where($args['column_name'], $args['value']);
+  $results = $db->get($args['table_name']);
+  return $res->withJson($results);
+});
+
 // UPDATE
 $app->post('/update/{table_name}/{id}', function (Request $req, Response $res, array $args) {
   global $db;
