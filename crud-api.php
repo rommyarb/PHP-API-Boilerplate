@@ -1,6 +1,4 @@
 <?php
-// error_reporting(0); // DISABLE ERROR AND WARNING REPORTS
-
 use \Psr\Http\Message\ResponseInterface as Response;
 use \Psr\Http\Message\ServerRequestInterface as Request;
 
