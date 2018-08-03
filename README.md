@@ -10,8 +10,8 @@ Using:
 ## Installation:
 Install composer if you haven't: https://getcomposer.org/download/
 
-1. In main directory, run this php command:
-`php composer.phar install`
+1. In main directory, run this php command:<br/>
+`php composer.phar install`<br/>
 to install all dependencies.
 
 2. Rename *config.php.example* to *config.php* and set your own configurations.
