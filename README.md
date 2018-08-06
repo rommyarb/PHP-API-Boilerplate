@@ -12,15 +12,16 @@ Install composer if you haven't: https://getcomposer.org/download
 
 <br/>
 
-### Using API
+### Using API:
 This project is using single file API: **api.php**
 <br/>
 Example:
+<br/>
 `http://localhost/my_api/api.php/register` --> for registing new user.
 <br/>
 `http://localhost/my_api/api.php/get/customers` --> will retrieve all rows in customers table.
 </br>
-- Request is always using POST method. For CRUD, set **token** at Authorization on request header.
+- Request is always using POST method. For CRUD, set **token** at Authorization on request header.<br/>
 `Authorization: Bearer MY_SECRET_TOKEN`
 - For registration set `Content-Type:application/x-www-form-urlencoded` on request header.
 
