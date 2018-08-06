@@ -19,7 +19,7 @@ Example:
 <br/>
 `http://localhost/my_api/api.php/register` --> for registing new user.
 <br/>
-`http://localhost/my_api/api.php/get/customers` --> will retrieve all rows in customers table.
+`http://localhost/my_api/api.php/get/users` --> will retrieve all rows in users table.
 </br>
 - Request is always using POST method. For CRUD, set **token** at Authorization on request header.<br/>
 `Authorization: Bearer MY_SECRET_TOKEN`
