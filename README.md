@@ -12,6 +12,21 @@ Install composer if you haven't: https://getcomposer.org/download
 
 <br/>
 
+### Using API
+This project is using single file API: **api.php**
+Example:
+`http://localhost/my_api/api.php/register` --> for registing new user.
+<br/>
+`http://localhost/my_api/api.php/get/customers` --> will retrieve all rows in customers table.
+</br>
+- Request is always using POST method. For CRUD, set **token** at Authorization on request header.
+<br/>
+`Authorization: Bearer MY_SECRET_TOKEN`
+<br/>
+- For registration set `Content-Type:application/x-www-form-urlencoded` on request header.
+
+<br/>
+
 ### This repository is using:
 - [Slim Framework](https://www.slimframework.com)
 - [PHP JWT](https://github.com/lindelius/php-jwt)

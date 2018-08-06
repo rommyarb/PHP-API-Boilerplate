@@ -5,19 +5,6 @@ use \Psr\Http\Message\ServerRequestInterface as Request;
 require 'vendor/autoload.php';
 include 'config.php';
 
-// VERIFY TOKEN
-$headers = getallheaders();
-$auth = isset($headers['Authorization']) ? $headers['Authorization'] : null;
-if ($auth == null) {
-  throw404();
-}
-$auth = explode(' ', $auth);
-$token = $auth[1];
-$decoded = \Lindelius\JWT\JWT::decode($token);
-if (!$decoded->verify($secret_key)) {
-  throw404();
-}
-
 // INIT SLIM APP
 $app = new \Slim\App();
 
@@ -25,6 +12,7 @@ $app = new \Slim\App();
 
 // CREATE
 $app->post('/create/{table_name}', function (Request $req, Response $res, array $args) {
+  verifyToken();
   global $db;
   $table_name = $args['table_name'];
   $data = $req->getParsedBody();
@@ -41,7 +29,8 @@ $app->post('/create/{table_name}', function (Request $req, Response $res, array 
 });
 
 // READ ALL
-$app->get('/get/{table_name}', function (Request $req, Response $res, array $args) {
+$app->post('/get/{table_name}', function (Request $req, Response $res, array $args) {
+  verifyToken();
   global $db;
   $table_name = $args['table_name'];
   $rows = $db->get($table_name);
@@ -49,7 +38,8 @@ $app->get('/get/{table_name}', function (Request $req, Response $res, array $arg
 });
 
 // READ ONE
-$app->get('/get_one/{table_name}/{id}', function (Request $req, Response $res, array $args) {
+$app->post('/get_one/{table_name}/{id}', function (Request $req, Response $res, array $args) {
+  verifyToken();
   global $db;
   $table_name = $args['table_name'];
   $id = $args['id'];
@@ -59,8 +49,9 @@ $app->get('/get_one/{table_name}/{id}', function (Request $req, Response $res, a
   return $res->withJson($row);
 });
 
-// (READ) SEARCH
-$app->get('/search/{table_name}/{column_name}/{value}', function (Request $req, Response $res, array $args) {
+// (READ) SEARCH 'LIKE'
+$app->post('/search/{table_name}/{column_name}/{value}', function (Request $req, Response $res, array $args) {
+  verifyToken();
   global $db;
   $table_name = $args['table_name'];
   $column_name = $args['column_name'];
@@ -71,8 +62,9 @@ $app->get('/search/{table_name}/{column_name}/{value}', function (Request $req, 
   return $res->withJson($results);
 });
 
-// (READ) WHERE
-$app->get('/get/{table_name}/{column_name}/{value}', function (Request $req, Response $res, array $args) {
+// (READ) WHERE '='
+$app->post('/get/{table_name}/{column_name}/{value}', function (Request $req, Response $res, array $args) {
+  verifyToken();
   global $db;
   $db->where($args['column_name'], $args['value']);
   $results = $db->get($args['table_name']);
@@ -81,6 +73,7 @@ $app->get('/get/{table_name}/{column_name}/{value}', function (Request $req, Res
 
 // UPDATE
 $app->post('/update/{table_name}/{id}', function (Request $req, Response $res, array $args) {
+  verifyToken();
   global $db;
   $table_name = $args['table_name'];
   $id = $args['id'];
@@ -100,6 +93,7 @@ $app->post('/update/{table_name}/{id}', function (Request $req, Response $res, a
 
 // DELETE
 $app->post('/delete/{table_name}/{id}', function (Request $req, Response $res, array $args) {
+  verifyToken();
   global $db;
   $db->where('id', $args['id']);
   $q = $db->delete($args['table_name']);
@@ -110,6 +104,86 @@ $app->post('/delete/{table_name}/{id}', function (Request $req, Response $res, a
     $arr['success'] = false;
     $arr['msg'] = $db->getLastError();
   }
+  return $res->withJson($arr);
+});
+
+//////////////////////////////////////////////////////////////////////////////////////////
+
+// REGISTER
+$app->post('/register', function (Request $req, Response $res, array $args) {
+  global $db, $secret_key;
+  $arr = array();
+
+  // get http request params
+  $data = $req->parsedBody();
+  $username = $data['username'];
+
+  // check if username exists
+  $db->where('username', $username);
+  $username_exists = $db->getOne('users')->count();
+  if ($username_exists) {
+    $arr['success'] = false;
+    $arr['msg'] = 'username already exist';
+  } else {
+    $hashed_password = password_hash($data['password'], PASSWORD_DEFAULT);
+    $insertData = array(
+      'fullname' => $data['fullname'],
+      'username' => $username,
+      'gender' => $data['gender'],
+      'hashed_password' => $hashed_password,
+      'created_at' => date(),
+    );
+    $q = $db->insert('users', $data);
+    if ($q) {
+      $arr['success'] = true;
+    } else {
+      $arr['success'] = false;
+      $arr['msg'] = $db->getLastError();
+    }
+  }
+  return $res->withJson($arr);
+});
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+// LOGIN
+$app->post('/login', function (Request $req, Response $res, array $args) {
+  global $db, $secret_key;
+
+  // HTTP POST Request with params 'username' & 'password'
+  $data = $req->parsedBody();
+  $username = $data['username'];
+  $password = $data['password'];
+
+  $db->where('username', $username);
+  $user = $db->getOne('users'); // GET user details from table 'users'
+  $arr = array(); //prepare return array
+  if ($user > 0) {
+    $hashed_password = $user['hashed_password'];
+    if (password_verify($password, $hashed_password)) {
+      // username & password matched!
+      $jwt = new \Lindelius\JWT\JWT();
+      $jwt->exp = time() + (60 * 60 * 2); // expire after 2 hours
+      $jwt->iat = time();
+
+      // YOU CAN ALSO PUT SOME INFO, LIKE:
+      $jwt->user_id = $user->id;
+      $jwt->is_admin = $user->is_admin;
+
+      // AND THEN GENERATE THE TOKEN:
+      $generated_token = $jwt->encode($secret_key);
+
+      $arr['success'] = true;
+      $arr['token'] = $generated_token;
+    } else {
+      $arr['success'] = false;
+      $arr['msg'] = 'Wrong password!';
+    }
+  } else {
+    $arr['success'] = false;
+    $arr['msg'] = 'Username is not registered';
+  }
+
   return $res->withJson($arr);
 });
 
