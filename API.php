@@ -115,25 +115,27 @@ $app->post('/register', function (Request $req, Response $res, array $args) {
   $arr = array();
 
   // get http request params
-  $data = $req->parsedBody();
+  $data = $req->getParsedBody();
   $username = $data['username'];
 
   // check if username exists
   $db->where('username', $username);
-  $username_exists = $db->getOne('users')->count();
-  if ($username_exists) {
+  $username_exists = $db->getOne('users');
+  if ($db->count) {
     $arr['success'] = false;
     $arr['msg'] = 'username already exist';
   } else {
     $hashed_password = password_hash($data['password'], PASSWORD_DEFAULT);
+    $currentDateTime = date('Y-m-d H:i:s');
     $insertData = array(
       'fullname' => $data['fullname'],
       'username' => $username,
       'gender' => $data['gender'],
       'hashed_password' => $hashed_password,
-      'created_at' => date(),
+      'created_at' => $currentDateTime,
+      'modified_at' => $currentDateTime,
     );
-    $q = $db->insert('users', $data);
+    $q = $db->insert('users', $insertData);
     if ($q) {
       $arr['success'] = true;
     } else {
@@ -151,7 +153,7 @@ $app->post('/login', function (Request $req, Response $res, array $args) {
   global $db, $secret_key;
 
   // HTTP POST Request with params 'username' & 'password'
-  $data = $req->parsedBody();
+  $data = $req->getParsedBody();
   $username = $data['username'];
   $password = $data['password'];
 
@@ -163,18 +165,18 @@ $app->post('/login', function (Request $req, Response $res, array $args) {
     if (password_verify($password, $hashed_password)) {
       // username & password matched!
       $jwt = new \Lindelius\JWT\JWT();
-      $jwt->exp = time() + (60 * 60 * 2); // expire after 2 hours
-      $jwt->iat = time();
+      $jwt->exp = time() + 7200; // expire after 2 hours (7200 seconds)
+      $jwt->iat = time(); //
 
       // YOU CAN ALSO PUT SOME INFO, LIKE:
-      $jwt->user_id = $user->id;
-      $jwt->is_admin = $user->is_admin;
+      // $jwt->user_id = $user['id'];
+      // $jwt->is_admin = $user['is_admin'];
 
       // AND THEN GENERATE THE TOKEN:
       $generated_token = $jwt->encode($secret_key);
 
       $arr['success'] = true;
-      $arr['token'] = $generated_token;
+      $arr['token'] = $generated_token; // put the token into array
     } else {
       $arr['success'] = false;
       $arr['msg'] = 'Wrong password!';
