@@ -2,7 +2,7 @@
 require_once 'vendor/joshcam/mysqli-database-class/MysqliDb.php';
 
 // CONFIGURATION
-$secret_key = "SET_YOUR_SUPER_SECRET_KEY_HERE";
+$secret_key = "YOUR_SUPER_SECRET_KEY_HERE";
 $db = new MysqliDb(array(
   'host' => 'YOUR_HOST', // example: 'localhost'
   'username' => 'YOUR_HOST_USERNAME',
@@ -15,4 +15,27 @@ function throw404()
 {
   header("HTTP/1.0 404 Not Found");
   exit('<h1>404: Not Found</h1>');
+}
+
+function throw401()
+{
+  header("HTTP/1.0 401 Unauthorized");
+  exit('<h1>401: Invalid Token</h1>');
+}
+
+function verifyToken()
+{
+  // VERIFY TOKEN
+  global $secret_key;
+  $headers = getallheaders();
+  $auth = isset($headers['Authorization']) ? $headers['Authorization'] : null;
+  if ($auth == null) {
+    throw401();
+  }
+  $auth = explode(' ', $auth);
+  $token = $auth[1];
+  $decoded = \Lindelius\JWT\JWT::decode($token);
+  if (!$decoded->verify($secret_key)) {
+    throw401();
+  }
 }
