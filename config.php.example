@@ -1,28 +1,33 @@
 <?php
-require_once 'vendor/joshcam/mysqli-database-class/MysqliDb.php';
 
 // CONFIGURATION
-$secret_key = "YOUR_SUPER_SECRET_KEY_HERE";
-$db = new MysqliDb(array(
-  'host' => 'YOUR_HOST', // example: 'localhost'
-  'username' => 'YOUR_HOST_USERNAME',
-  'password' => 'YOUR_HOST_PASSWORD',
-  'db' => 'YOUR_DATABASE_NAME',
-  'charset' => 'SET_DB_CHARSET', // example: 'utf8'
-));
+$secret_key = "YOUR_SUPER_SECRET_CODE";
+$host = 'YOUR_DB_HOST';
+$dbname = 'YOUR_DB_NAME';
+$username = 'YOUR_MYSQL_DB_USERNAME';
+$password = 'YOUR_MYSQL_DB_PASSWORD';
+$table_users = 'your_users_db_table';
+////////////////////////////////////////////////////////////////////////////////
+$dsn = 'mysql:host=' . $host . ';dbname=' . $dbname;
+$pdo = new PDO($dsn, $username, $password);
+$db = new SimpleCrud\SimpleCrud($pdo);
+////////////////////////////////////////////////////////////////////////////////
 
+// Throwing 404 error
 function throw404()
 {
   header("HTTP/1.0 404 Not Found");
   exit('<h1>404: Not Found</h1>');
 }
 
+// Throwing 401 error
 function throw401()
 {
   header("HTTP/1.0 401 Unauthorized");
   exit('<h1>401: Invalid Token</h1>');
 }
 
+// For verifying token
 function verifyToken()
 {
   // VERIFY TOKEN
