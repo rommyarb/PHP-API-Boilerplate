@@ -2,6 +2,7 @@
     "require": {
         "slim/slim": "^3.0",
         "lindelius/php-jwt": "^0.6",
-        "simple-crud/simple-crud": "^6.12"
+        "simple-crud/simple-crud": "^6.12",
+        "phpmailer/phpmailer": "~6.0"
     }
 }
