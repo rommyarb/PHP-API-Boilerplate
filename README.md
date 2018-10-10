@@ -31,3 +31,4 @@ Example:
 - [Slim Framework](https://www.slimframework.com)
 - [PHP JWT](https://github.com/lindelius/php-jwt)
 - [SimpleCrud](https://github.com/oscarotero/simple-crud)
+- [PHPMailer](https://github.com/PHPMailer/PHPMailer)
