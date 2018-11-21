@@ -4,7 +4,7 @@
 
 <br/>
 
-# Requirements
+### Requirements
 - PHP 7.1
 - OpenSSL PHP extension (for certain algorithms)
 
