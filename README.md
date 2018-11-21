@@ -4,6 +4,12 @@
 
 <br/>
 
+# Requirements
+- PHP 7.1
+- OpenSSL PHP extension (for certain algorithms)
+
+<br/>
+
 ### Installation:
 Install composer if you haven't: https://getcomposer.org/download
 1. In main directory, run this php command to install all dependencies:
