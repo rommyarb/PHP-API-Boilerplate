@@ -32,7 +32,7 @@ Example:
 - For registration set `Content-Type:application/x-www-form-urlencoded` on request header.
 
 ### Sending email:
-...
+First you must setup a Cron Job to check and send email every...
 
 <br/>
 
