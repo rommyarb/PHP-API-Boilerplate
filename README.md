@@ -1,4 +1,4 @@
-# RESTful PHP API
+# PHP API Boilerplate
 
 ![](https://phptechsolutions.files.wordpress.com/2014/11/android_php_mysql.png)
 
@@ -30,6 +30,9 @@ Example:
 - Request is always using POST method. For CRUD, set **token** at Authorization on request header.<br/>
 `Authorization: Bearer MY_SECRET_TOKEN`
 - For registration set `Content-Type:application/x-www-form-urlencoded` on request header.
+
+### Sending email:
+...
 
 <br/>
 
