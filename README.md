@@ -32,7 +32,8 @@ Example:
 - For registration set `Content-Type:application/x-www-form-urlencoded` on request header.
 
 ### Sending email:
-....
+Just use sendEmail() function to send an email.
+`sendEmail($to, $subject, $htmlBody)`
 
 <br/>
 

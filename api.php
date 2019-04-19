@@ -287,7 +287,6 @@ function sendEmail($to, $subject, $body)
   $mailer = new Swift_Mailer($transport);
 
   // Create a message
-  $body = '<html><body>' . $body . '</body></html>';
   $message = (new Swift_Message($subject))
     ->setFrom([$senderEmail => $senderFullname])
     ->setTo([$to])
