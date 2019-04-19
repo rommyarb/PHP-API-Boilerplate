@@ -29,8 +29,6 @@
 
 // header("Access-Control-Allow-Origin: *"); // if you want to allow different domain request
 
-// use PHPMailer\PHPMailer\Exception; // if you want to use PHPMailer exception
-use PHPMailer\PHPMailer\PHPMailer;
 use \Psr\Http\Message\ResponseInterface as Response;
 use \Psr\Http\Message\ServerRequestInterface as Request;
 
@@ -222,7 +220,6 @@ $app->post('/register', function (Request $req, Response $res, array $args) {
   } finally {
     return $res->withJson($arr);
   }
-
 });
 
 // LOGIN
@@ -274,43 +271,31 @@ $app->post('/login', function (Request $req, Response $res, array $args) {
 function sendEmail($to, $subject, $body)
 {
   // SET UP your mail server
-  $emailHost = "your.mailhost.com";
+  $emailHost = "smtp.yourdomain.com";
   $emailUsername = "youruser@yourdomain.com";
   $emailPassword = "yoursupersecretpassword";
 
   $senderEmail = "sender@yourdomain.com";
   $senderFullname = "Your Fullname";
 
-  $mail = new PHPMailer(true); // Passing `true` enables exceptions
-  //Server settings
-  // $mail->SMTPDebug = 2; // Enable verbose debug output (to enable: ...->SMTPDebug= 2)
-  $mail->isSMTP(); // Set mailer to use SMTP
-  $mail->Host = $emailHost; // Specify main and backup SMTP servers
-  $mail->SMTPAuth = true; // Enable SMTP authentication
-  $mail->Username = $emailUsername; // SMTP username
-  $mail->Password = $emailPassword; // SMTP password
-  $mail->SMTPSecure = 'ssl'; // Enable TLS encryption, `ssl` also accepted
-  $mail->Port = 465; // TCP port to connect to
+  // Create the Transport
+  $transport = (new Swift_SmtpTransport($emailHost, 25))
+    ->setUsername($emailUsername)
+    ->setPassword($emailPassword);
 
-  //Recipients
-  $mail->setFrom($senderEmail, $senderFullname);
-  // $mail->addAddress('joe@example.net', 'Joe User');     // Add a recipient
-  $mail->addAddress($to); // Name is optional
-  // $mail->addReplyTo('info@example.com', 'Information');
-  // $mail->addCC('cc@example.com');
-  // $mail->addBCC('bcc@example.com');
+  // Create the Mailer using your created Transport
+  $mailer = new Swift_Mailer($transport);
 
-  //Attachments
-  // $mail->addAttachment('/var/tmp/file.tar.gz');         // Add attachments
-  // $mail->addAttachment('/tmp/image.jpg', 'new.jpg');    // Optional name
+  // Create a message
+  $body = '<html><body>' . $body . '</body></html>';
+  $message = (new Swift_Message($subject))
+    ->setFrom([$senderEmail => $senderFullname])
+    ->setTo([$to])
+    ->setBody($body, 'text/html');
 
-  //Content
-  $mail->isHTML(true); // Set email format to HTML
-  $mail->Subject = $subject;
-  $mail->Body = $body;
-  // $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
-
-  $mail->send();
+  // Send the message
+  // $result = $mailer->send($message);
+  $mailer->send($message);
 }
 
 $app->run();
